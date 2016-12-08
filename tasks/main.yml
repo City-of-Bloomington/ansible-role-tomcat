@@ -9,13 +9,14 @@
     - tomcat8
     - libapache2-mod-jk
 
-- file: path=/srv/webapps state=directory owner=www-data group=staff mode=2775
+- file: path=/srv/webapps state=directory owner=tomcat8 group=staff mode=2775
 
 - name: Set tomcat webapps directory to /srv/webapps
   lineinfile:
-      dest: /etc/tomcat8/server.xml
-      regexp: <Host name="localhost"  appBase="webapps"
-      line: '      <Host name="localhost"  appBase="/srv/webapps"'
+    dest: /etc/tomcat8/server.xml
+    regexp: <Host name="localhost"  appBase="webapps"
+    line: '      <Host name="localhost"  appBase="/srv/webapps"'
+  notify: tomcat_restart
 
 # DO NOT Open the firewall
 # Tomcat should always be fronted by Apache.
