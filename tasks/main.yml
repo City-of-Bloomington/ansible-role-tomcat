@@ -1,0 +1,23 @@
+---
+- name: Install tomcat and related packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - default-jre
+    - default-jdk
+    - tomcat8
+    - libapache2-mod-jk
+
+- file: path=/srv/webapps state=directory owner=www-data group=staff mode=2775
+
+- name: Set tomcat webapps directory to /srv/webapps
+  lineinfile:
+      dest: /etc/tomcat8/server.xml
+      regexp: <Host name="localhost"  appBase="webapps"
+      line: '      <Host name="localhost"  appBase="/srv/webapps"'
+
+# DO NOT Open the firewall
+# Tomcat should always be fronted by Apache.
+# If, for debugging, you need to access a Tomcat app directly, you can
+# manually open the port.
