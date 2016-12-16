@@ -3,7 +3,7 @@ City-of-Bloomington.tomcat
 
 Install Tomcat along with common packages on Ubuntu using apt.
 
-Requirements
+Dependencies
 ------------
 
 * City-of-Bloomington.linux
@@ -15,8 +15,6 @@ Example Playbook
 - hosts: linux-tomcat
   become: yes
   roles:
-    - City-of-Bloomington.linux
-    - City-of-Bloomington.apache
     - City-of-Bloomington.tomcat
 ```
 
