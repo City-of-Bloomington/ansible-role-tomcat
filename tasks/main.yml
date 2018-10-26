@@ -1,23 +1,29 @@
 ---
-- name: Install tomcat and related packages
+- name: "Install tomcat and related packages"
   apt:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - default-jre
-    - default-jdk
-    - tomcat8
-    - libapache2-mod-jk
+    name: "{{ packages }}"
+    state: "present"
+  vars:
+    packages:
+      - "default-jre"
+      - "default-jdk"
+      - "tomcat8"
+      - "libapache2-mod-jk"
 
-- name: Create directory for webapps
-  file: path=/srv/webapps state=directory owner=tomcat8 group=staff mode=2775
+- name: "Create directory for webapps"
+  file:
+    path: "/srv/webapps"
+    state: "directory"
+    owner: "tomcat8"
+    group: "staff"
+    mode: "2775"
 
-- name: Set tomcat webapps directory to /srv/webapps
+- name: "Set tomcat webapps directory to /srv/webapps"
   lineinfile:
-    dest: /etc/tomcat8/server.xml
-    regexp: <Host name="localhost"
+    dest: "/etc/tomcat8/server.xml"
+    regexp: '<Host name="localhost"'
     line: '      <Host name="localhost"  appBase="/srv/webapps"'
-  notify: tomcat_restart
+  notify: "tomcat_restart"
 
 # Uncomment the mod_jk port in tomcat's server.xml
 #
@@ -34,11 +40,11 @@
 #    <Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />
 #    -->
 #
-- name: Uncomment the mod_jk port in tomcat's server.xml
+- name: "Uncomment the mod_jk port in tomcat's server.xml"
   command: perl -0777 -pi -e 's/(\s+<!-- Define an AJP 1.3 Connector.+)\n\s+<!--\n(\s+<Connector.+)\n\s+-->/$1\n$2/' server.xml
   args:
-    chdir: /etc/tomcat8
-  notify: tomcat_restart
+    chdir: "/etc/tomcat8"
+  notify: "tomcat_restart"
 
 # DO NOT Open the firewall
 # Tomcat should always be fronted by Apache.
