@@ -17,7 +17,7 @@
   file:
     path:  "{{ tomcat_webapps }}"
     state: "directory"
-    owner: "{{ tomcat_package }}"
+    owner: "{{ tomcat_user }}"
     group: "staff"
     mode: "2775"
 

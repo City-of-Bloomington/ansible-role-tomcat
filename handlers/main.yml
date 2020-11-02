@@ -1,6 +1,6 @@
 ---
-- name: tomcat_restart
+- name: 'tomcat_restart'
   service:
-    name: tomcat8
-    state: restarted
+    name:  "{{ tomcat_package }}"
+    state: 'restarted'
 ...

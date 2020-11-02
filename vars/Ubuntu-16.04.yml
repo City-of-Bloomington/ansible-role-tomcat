@@ -1,4 +1,5 @@
 ---
 tomcat_version: 8
 tomcat_package: "tomcat{{ tomcat_version }}"
+tomcat_user:    "tomcat{{ tomcat_version }}"
 ...
