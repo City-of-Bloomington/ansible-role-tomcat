@@ -15,17 +15,17 @@
 
 - name: "Create directory for webapps"
   file:
-    path: "/srv/webapps"
+    path:  "{{ tomcat_webapps }}"
     state: "directory"
     owner: "{{ tomcat_package }}"
     group: "staff"
     mode: "2775"
 
-- name: "Set tomcat webapps directory to /srv/webapps"
+- name: "Configure tomcat webapps directory"
   lineinfile:
     dest: "/etc/{{ tomcat_package }}/server.xml"
     regexp: '<Host name="localhost"'
-    line: '      <Host name="localhost"  appBase="/srv/webapps"'
+    line: '      <Host name="localhost"  appBase="{{ tomcat_webapps }}"'
   notify: "tomcat_restart"
 
 # Uncomment the mod_jk port in tomcat's server.xml
