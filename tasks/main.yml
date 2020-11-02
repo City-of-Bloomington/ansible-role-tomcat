@@ -1,4 +1,7 @@
 ---
+- name: 'Load os-specific variables'
+  include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+
 - name: "Install tomcat and related packages"
   apt:
     name: "{{ packages }}"
@@ -7,20 +10,20 @@
     packages:
       - "default-jre"
       - "default-jdk"
-      - "tomcat8"
+      - "{{ tomcat_package }}"
       - "libapache2-mod-jk"
 
 - name: "Create directory for webapps"
   file:
     path: "/srv/webapps"
     state: "directory"
-    owner: "tomcat8"
+    owner: "{{ tomcat_package }}"
     group: "staff"
     mode: "2775"
 
 - name: "Set tomcat webapps directory to /srv/webapps"
   lineinfile:
-    dest: "/etc/tomcat8/server.xml"
+    dest: "/etc/{{ tomcat_package }}/server.xml"
     regexp: '<Host name="localhost"'
     line: '      <Host name="localhost"  appBase="/srv/webapps"'
   notify: "tomcat_restart"
@@ -43,7 +46,7 @@
 - name: "Uncomment the mod_jk port in tomcat's server.xml"
   command: perl -0777 -pi -e 's/(\s+<!-- Define an AJP 1.3 Connector.+)\n\s+<!--\n(\s+<Connector.+)\n\s+-->/$1\n$2/' server.xml
   args:
-    chdir: "/etc/tomcat8"
+    chdir: "/etc/{{ tomcat_package }}"
   notify: "tomcat_restart"
 
 # DO NOT Open the firewall
