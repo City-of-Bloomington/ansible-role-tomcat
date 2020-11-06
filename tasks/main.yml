@@ -8,10 +8,25 @@
     state: "present"
   vars:
     packages:
-      - "default-jre"
       - "default-jdk"
       - "{{ tomcat_package }}"
       - "libapache2-mod-jk"
+
+- name: "Look up webapps directory"
+  set_fact:
+    tomcat_webapps: "/var/lib/{{ tomcat_package }}/webapps"
+  when: 'tomcat_webapps is undefined or tomcat_webapps|length == 0'
+
+- name: 'Create systemd drop-in directory'
+  file:
+    path: "/etc/systemd/system/{{ tomcat_package }}.service.d"
+    state: 'directory'
+
+- name: 'Add drop-in unit file'
+  template:
+    src: 'tomcat.service'
+    dest: "/etc/systemd/system/{{ tomcat_package }}.service.d/local.conf"
+  notify: 'linux_systemd_reload'
 
 - name: "Create directory for webapps"
   file:
@@ -21,33 +36,11 @@
     group: "staff"
     mode: "2775"
 
-- name: "Configure tomcat webapps directory"
-  lineinfile:
+- name: 'Configure tomcat'
+  template:
+    src: 'server.xml'
     dest: "/etc/{{ tomcat_package }}/server.xml"
-    regexp: '<Host name="localhost"'
-    line: '      <Host name="localhost"  appBase="{{ tomcat_webapps }}"'
-  notify: "tomcat_restart"
-
-# Uncomment the mod_jk port in tomcat's server.xml
-#
-# Ubuntu will modify this file, over time, as updates are applied.
-# We want to make sure the Connector tag for port 8009 is uncommented.
-# This requires doign a multiline search and replace.
-#
-# This solution uses Perl to do the regex, as it allows the replace
-# to be done using a single command.
-#
-# The relevant portion of server.xml that we're working with is:
-#    <!-- Define an AJP 1.3 Connector on port 8009 -->
-#    <!--
-#    <Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />
-#    -->
-#
-- name: "Uncomment the mod_jk port in tomcat's server.xml"
-  command: perl -0777 -pi -e 's/(\s+<!-- Define an AJP 1.3 Connector.+)\n\s+<!--\n(\s+<Connector.+)\n\s+-->/$1\n$2/' server.xml
-  args:
-    chdir: "/etc/{{ tomcat_package }}"
-  notify: "tomcat_restart"
+  notify: 'tomcat_restart'
 
 # DO NOT Open the firewall
 # Tomcat should always be fronted by Apache.

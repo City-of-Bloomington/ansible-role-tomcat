@@ -1,5 +1,6 @@
 ---
 tomcat_version: 9
-tomcat_package: "tomcat{{ tomcat_version }}"
-tomcat_user:    "tomcat"
+tomcat_package: 'tomcat9'
+tomcat_base:    '/var/lib/tomcat9'
+tomcat_user:    'tomcat'
 ...
