@@ -36,6 +36,13 @@
     group: "staff"
     mode: "2775"
 
+- name: "Create directory for app data"
+  file:
+    path:  "/srv/data"
+    state: "directory"
+    group: "staff"
+    mode:  "2775"
+
 - name: 'Configure tomcat'
   template:
     src: 'server.xml'
